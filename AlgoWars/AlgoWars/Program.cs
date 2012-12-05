@@ -64,8 +64,9 @@ namespace AlgoWars
         {
             Matrix = readConnectivityMatrix("input.txt");
 			Matrix2 = (int[,]) Matrix.Clone();
-            printMatrix();
-			printList(solveProblem(Matrix2));
+            //printMatrix();
+			outputAnswer(solveProblem(Matrix2), "output.txt");
+            Console.WriteLine(validate("output.txt"));
             Console.ReadKey();
         }
 
@@ -78,6 +79,16 @@ namespace AlgoWars
 			Console.WriteLine();
 			Console.Write(getTotalLength(list));
 		}
+
+        private static void outputAnswer(List<int> answer, string file)
+        {
+            StreamWriter writer = new StreamWriter(file);
+            foreach (int i in answer)
+                writer.Write(i.ToString() + " ");
+            writer.WriteLine();
+            writer.WriteLine(getTotalLength(answer));
+            writer.Close();
+        }
 
         private static int[,] readConnectivityMatrix(string file)
         {
@@ -94,6 +105,7 @@ namespace AlgoWars
                     Matrix[i,j] = int.Parse(nums[j]);
                 }
             }
+            reader.Close();
             return Matrix;
         }
 
@@ -280,10 +292,12 @@ namespace AlgoWars
             string listLine = reader.ReadLine();
             int total = int.Parse(reader.ReadLine());
             string[] nums = listLine.Split(splitChars, StringSplitOptions.RemoveEmptyEntries);
+            if (nums.Length != n) return false;
             foreach (string s in nums)
             {
                 modOrder.Add(int.Parse(s));
             }
+            reader.Close();
             return total == getTotalLength(modOrder);
         }
 
