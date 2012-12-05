@@ -127,13 +127,37 @@ namespace AlgoWars
 				if (Rconnect == null)
 					Rconnect = new HashDequeue.Node(connect, null, current + 1);
 
-				HashDequeue.Node L = findBest(n.next, connect, current+1, true);
-				HashDequeue.Node R = findBest(n.prev, connect, current + 1, false);
+				HashDequeue.Node L; 
+				HashDequeue.Node R;
 
-				if (L == null)
+				HashDequeue.Node a = n.next;
+
+				int x = current + 1;
+
+				while(a != null && a.next != null){
+					a = a.next;
+					++x;
+				}
+
+				L = new HashDequeue.Node(a, null, x);
+
+				//L = findBest(n.next, connect, current+1, true);
+				//R = findBest(n.prev, connect, current + 1, false);
+				if (a == null)
 					L = new HashDequeue.Node(n, null, current + 1);
 
-				if (R == null)
+				a = n.prev;
+
+				x = current + 1;
+
+				while (a != null && a.prev != null) {
+					a = a.prev;
+					++x;
+				}
+
+				R = new HashDequeue.Node(a, null, x);
+
+				if (a == null)
 					R = new HashDequeue.Node(n, null, current + 1);
 
 				if (L.data + Rconnect.data < R.data + Lconnect.data) {
