@@ -66,7 +66,7 @@ namespace AlgoWars
 
         static void Main(string[] args)
         {
-            Matrix = readConnectivityMatrix("input.txt");
+            Matrix = readConnectivityMatrix("input6.txt");
 			Matrix2 = (int[,]) Matrix.Clone();
             //printMatrix();
 			outputAnswer(solveProblem(Matrix2), "output.txt");
