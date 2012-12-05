@@ -23,6 +23,10 @@ namespace AlgoWars
 				public Node next;
 				public int data;
 
+
+
+
+
 				public override string ToString() {
 					return data.ToString();
 				}
@@ -208,13 +212,14 @@ namespace AlgoWars
 				return findBest(n.prev, connect, current + 1, true);
 			}
 		}
-
+		//41177570
+		//41126069
         private static List<int> solveProblem(int[,] matrix)
         {
 			int row;
 			int col;
 			while ((row = findMostConnections(matrix)) >= 0) {
-				while ((col = getRowHigh(row, matrix)) > 0) {
+				while ((col = getRowHigh(row, matrix)) >= 0) {
 					if (answer.Contains(col)) {
 
 						if (answer.Contains(row))
@@ -234,6 +239,7 @@ namespace AlgoWars
 					}
 
 					zero(row, col, matrix);
+					break;
 				}
 			}
 
