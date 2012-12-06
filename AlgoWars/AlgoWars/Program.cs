@@ -13,24 +13,6 @@ namespace AlgoWars
 
 			public class Node {
 
-				public int fromRight {
-					get {
-						if (dir) {
-							return right.next.count + count + 1 + right.count;
-						}
-						return right.next.count - count + right.data;
-					}
-				}
-
-				public int fromLeft {
-					get {
-						if (!dir) {
-							return left.next.count + count + 1 + left.data;
-						}
-						return left.next.count - count + left.count;
-					}
-				}
-
 				public Node(Node next, Node prev, int data) {
 					this.prev = prev;
 					this.next = next;
@@ -40,12 +22,6 @@ namespace AlgoWars
 				public Node prev;
 				public Node next;
 				public int data;
-
-				// for static nodes: count - left, data - right
-				public Node left = null;  // left.next will point to left 
-				public int count = 0;  // how far from center
-				public Node right = null;  // right.next will point to far right
-				public bool dir = false;  // true for left of center, false for right
 
 				public override string ToString() {
 					return data.ToString();
