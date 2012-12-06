@@ -13,6 +13,24 @@ namespace AlgoWars
 
 			public class Node {
 
+				public int fromRight {
+					get {
+						if (dir) {
+							return right.next.count + count + 1 + right.count;
+						}
+						return right.next.count - count + right.data;
+					}
+				}
+
+				public int fromLeft {
+					get {
+						if (!dir) {
+							return left.next.count + count + 1 + left.data;
+						}
+						return left.next.count - count + left.count;
+					}
+				}
+
 				public Node(Node next, Node prev, int data) {
 					this.prev = prev;
 					this.next = next;
@@ -23,9 +41,11 @@ namespace AlgoWars
 				public Node next;
 				public int data;
 
-
-
-
+				// for static nodes: count - left, data - right
+				public Node left = null;  // left.next will point to left 
+				public int count = 0;  // how far from center
+				public Node right = null;  // right.next will point to far right
+				public bool dir = false;  // true for left of center, false for right
 
 				public override string ToString() {
 					return data.ToString();
@@ -51,6 +71,12 @@ namespace AlgoWars
 
 			public List<int> toList() {
 				List<int> list = new List<int>();
+
+				if (root == null) {
+					answer.root = answer.hash.ElementAt(0).Value;
+					while (answer.root.prev != null)
+						answer.root = answer.root.prev;
+				}
 				while (root != null) {
 					list.Add(root.data + 1);
 					root = root.next;
@@ -66,7 +92,7 @@ namespace AlgoWars
 
         static void Main(string[] args)
         {
-            Matrix = readConnectivityMatrix("input6.txt");
+            Matrix = readConnectivityMatrix("input.txt");
 			Matrix2 = (int[,]) Matrix.Clone();
             //printMatrix();
 			outputAnswer(solveProblem(Matrix2), "output.txt");
@@ -113,140 +139,75 @@ namespace AlgoWars
             return Matrix;
         }
 
-		// does everything - finds closest node to the one we want to be next too
-		// direction - true for left, false for right
-		// next will be node to set, data will be how far
-		private static HashDequeue.Node findBest(HashDequeue.Node n, HashDequeue.Node connect, int current = 0, bool direction = false) {
-			if(n == null)				
-				return null;
-			
-			if (current == 0) {
+		// does everything - finds closest node to the one we want to be next too and places it there
+		private static void findBest(HashDequeue.Node n, HashDequeue.Node connect) {		
 
-				HashDequeue.Node t = n;
-				while (t != null)
-					if (t.data == connect.data)
-						return null;
-					else t = t.next;
+			HashDequeue.Node t = n;
+			while (t != null)
+				if (t.data == connect.data)
+					return;
+				else t = t.next;
 
-				t = n;
-				while (t != null)
-					if (t.data == connect.data)
-						return null;
-					else t = t.prev;
+			t = n;
+			while (t != null)
+				if (t.data == connect.data)
+					return;
+				else t = t.prev;
 
-				HashDequeue.Node Lconnect;
-				HashDequeue.Node Rconnect;
+			HashDequeue.Node Lconnect = fromLeft(connect);
+			HashDequeue.Node Rconnect = fromRight(connect);
+			HashDequeue.Node L = fromLeft(n);
+			HashDequeue.Node R = fromRight(n);
 
-				HashDequeue.Node a = connect.next;
-				int x = current + 1;
-				while (a != null && a.next != null) {
-					a = a.next;
-					++x;
-				}
-
-				Lconnect = new HashDequeue.Node(a, null, x);
-				if (a == null)
-					Lconnect = new HashDequeue.Node(connect, null, current + 1);
-
-				a = connect.prev;
-				x = current + 1;
-				while (a != null && a.prev != null) {
-					a = a.prev;
-					++x;
-				}
-
-				Rconnect = new HashDequeue.Node(a, null, x);
-				if (a == null)
-					Rconnect = new HashDequeue.Node(connect, null, current + 1);
-
-				HashDequeue.Node L; 
-				HashDequeue.Node R;
-
-				a = n.next;
-
-				x = current + 1;
-
-				while(a != null && a.next != null){
-					a = a.next;
-					++x;
-				}
-
-				L = new HashDequeue.Node(a, null, x);
-
-
-				if (a == null)
-					L = new HashDequeue.Node(n, null, current + 1);
-
-				a = n.prev;
-
-				x = current + 1;
-
-				while (a != null && a.prev != null) {
-					a = a.prev;
-					++x;
-				}
-
-				R = new HashDequeue.Node(a, null, x);
-
-				if (a == null)
-					R = new HashDequeue.Node(n, null, current + 1);
-
-				if (L.data + Rconnect.data < R.data + Lconnect.data) {
-					answer.insert(connect);
-					L.next.next = Rconnect.next;
-					Rconnect.next.prev = L.next;
-					return null;
-				}
-
-				answer.insert(connect);
-				R.next.prev = Lconnect.next;
-				Lconnect.next.next = R.next;
-				return null;
-			} else if (direction) {
-				if(n.next == null)
-					return new HashDequeue.Node(n, null, current);
-				return findBest(n.next, connect, current + 1, true);
-			} else {
-				if (n.prev == null)
-					return new HashDequeue.Node(n, null, current);
-				return findBest(n.prev, connect, current + 1, true);
+			answer.insert(connect);
+			if (L.data + Rconnect.data < R.data + Lconnect.data) {
+				L.next.next = Rconnect.next;
+				Rconnect.next.prev = L.next;
+				return;
 			}
+			R.next.prev = Lconnect.next;
+			Lconnect.next.next = R.next;
 		}
-		//41177570
-		//41126069
+
+		private static HashDequeue.Node fromRight(HashDequeue.Node n){
+			int i = 0;
+			while (n.prev != null) {
+				n = n.prev;
+				++i;
+			}
+			return new HashDequeue.Node(n, null, i);
+		}
+
+		private static HashDequeue.Node fromLeft(HashDequeue.Node n) {
+			int i = 0;
+			while (n.next != null) {
+				n = n.next;
+				++i;
+			}
+			return new HashDequeue.Node(n, null, i);
+		}
+
         private static List<int> solveProblem(int[,] matrix)
         {
 			int row;
 			int col;
 			while ((row = findMostConnections(matrix)) >= 0) {
-				while ((col = getRowHigh(row, matrix)) >= 0) {
-					if (answer.Contains(col)) {
-
-						if (answer.Contains(row))
-							findBest(answer.getInt(col), answer.getInt(row));
-						else
-							findBest(answer.getInt(col), new HashDequeue.Node(null, null, row));
-					} else {
-						HashDequeue.Node n = new HashDequeue.Node(null, null, col);
-						answer.insert(n);
-						if (answer.root == null)
-							answer.root = n;
-
-						if (answer.Contains(row))
-							findBest(n, answer.getInt(row));
-						else
-							findBest(n, new HashDequeue.Node(null, null, row));
-					}
-
-					zero(row, col, matrix);
-					break;
+				col = getRowHigh(row, matrix);
+				if (answer.Contains(col)) {
+					if (answer.Contains(row))
+						findBest(answer.getInt(col), answer.getInt(row));
+					else
+						findBest(answer.getInt(col), new HashDequeue.Node(null, null, row));
+				} else {
+					HashDequeue.Node n = new HashDequeue.Node(null, null, col);
+					answer.insert(n);
+					if (answer.Contains(row))
+						findBest(n, answer.getInt(row));
+					else
+						findBest(n, new HashDequeue.Node(null, null, row));
 				}
+				zero(row, col, matrix);
 			}
-
-			answer.root = answer.hash[0];
-			while (answer.root.prev != null)
-				answer.root = answer.root.prev;
-
 
 			return answer.toList();
         }
@@ -314,9 +275,15 @@ namespace AlgoWars
             int total = int.Parse(reader.ReadLine());
             string[] nums = listLine.Split(splitChars, StringSplitOptions.RemoveEmptyEntries);
             if (nums.Length != n) return false;
+
+			bool[] check = new bool[n];
             foreach (string s in nums)
             {
-                modOrder.Add(int.Parse(s));
+				int temp = int.Parse(s);
+				modOrder.Add(temp);
+				if (check[temp-1])
+					return false;
+				check[temp-1] = true;
             }
             reader.Close();
             return total == getTotalLength(modOrder);

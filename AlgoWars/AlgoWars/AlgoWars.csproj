@@ -51,9 +51,17 @@
     <Content Include="input.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="input1.txt" />
+    <Content Include="input10.txt" />
+    <Content Include="input2.txt" />
+    <Content Include="input3.txt" />
+    <Content Include="input4.txt" />
+    <Content Include="input5.txt" />
     <Content Include="input6.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="input8.txt" />
+    <Content Include="input9.txt" />
     <Content Include="output.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
